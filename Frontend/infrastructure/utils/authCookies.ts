@@ -1,23 +1,18 @@
 /**
+ * Infrastructure: Auth Cookies
  * Утилиты для работы с cookies аутентификации
- * Синхронизирует токены между сервером и клиентом
  */
 
-/**
- * Сохранить токены в cookies
- * Используется для синхронизации между сервером и клиентом
- */
 export function persistAuthCookies(accessToken: string, refreshToken: string): void {
   if (import.meta.server) {
-    // На сервере создаем cookies
     const accessTokenCookie = useCookie('access_token', {
-      maxAge: 60 * 60 * 24, // 24 часа
-      httpOnly: false, // Доступен из JS для клиентской части
+      maxAge: 60 * 60 * 24,
+      httpOnly: false,
       secure: process.env.NODE_ENV === 'production',
       sameSite: 'lax',
     })
     const refreshTokenCookie = useCookie('refresh_token', {
-      maxAge: 60 * 60 * 24 * 7, // 7 дней
+      maxAge: 60 * 60 * 24 * 7,
       httpOnly: false,
       secure: process.env.NODE_ENV === 'production',
       sameSite: 'lax',
@@ -26,7 +21,6 @@ export function persistAuthCookies(accessToken: string, refreshToken: string): v
     accessTokenCookie.value = accessToken
     refreshTokenCookie.value = refreshToken
   } else {
-    // На клиенте также сохраняем в localStorage для быстрого доступа
     try {
       localStorage.setItem('access_token', accessToken)
       localStorage.setItem('refresh_token', refreshToken)
@@ -36,9 +30,6 @@ export function persistAuthCookies(accessToken: string, refreshToken: string): v
   }
 }
 
-/**
- * Очистить cookies аутентификации
- */
 export function clearAuthCookies(): void {
   if (import.meta.server) {
     const accessTokenCookie = useCookie('access_token')
@@ -55,7 +46,4 @@ export function clearAuthCookies(): void {
     }
   }
 }
-
-
-
 
