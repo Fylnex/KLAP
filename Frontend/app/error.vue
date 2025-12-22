@@ -17,24 +17,41 @@ useHead({
 })
 
 const handleError = () => clearError({ redirect: '/' })
+
+const imageError = ref(false)
+
+const handleImageError = () => {
+  imageError.value = true
+  console.error('Failed to load 404.png image')
+}
 </script>
 
 <template>
-  <div class="error-page">
-    <img 
-      src="/404.png" 
-      alt="404 Page Not Found" 
-      class="error-image"
-    />
-    <div class="error-overlay">
-      <button 
-        @click="handleError" 
-        class="back-button"
-      >
-        Вернуться на главную
-      </button>
+  <UApp>
+    <div class="error-page">
+      <img 
+        v-if="!imageError"
+        src="/404.png" 
+        alt="404 Page Not Found" 
+        class="error-image"
+        @error="handleImageError"
+        @load="imageError = false"
+        loading="eager"
+      />
+      <div v-else class="error-fallback">
+        <h1 class="error-code">404</h1>
+        <p class="error-message">Страница не найдена</p>
+      </div>
+      <div class="error-overlay">
+        <button 
+          @click="handleError" 
+          class="back-button"
+        >
+          Вернуться на главную
+        </button>
+      </div>
     </div>
-  </div>
+  </UApp>
 </template>
 
 <style scoped>
@@ -50,6 +67,7 @@ const handleError = () => clearError({ redirect: '/' })
   display: flex;
   align-items: center;
   justify-content: center;
+  background-color: #f5f5f5;
 }
 
 .error-image {
@@ -57,6 +75,29 @@ const handleError = () => clearError({ redirect: '/' })
   height: 100%;
   object-fit: cover;
   object-position: center;
+  display: block;
+}
+
+.error-fallback {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+}
+
+.error-code {
+  font-size: 8rem;
+  font-weight: bold;
+  color: #1b1718;
+  margin: 0;
+  line-height: 1;
+}
+
+.error-message {
+  font-size: 1.5rem;
+  color: #666;
+  margin: 0;
 }
 
 .error-overlay {
